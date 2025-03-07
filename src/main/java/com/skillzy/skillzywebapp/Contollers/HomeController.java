@@ -1,7 +1,9 @@
 package com.skillzy.skillzywebapp.Contollers;
 
 import com.skillzy.skillzywebapp.DTOs.CourseDtos.CoursesDto;
+import com.skillzy.skillzywebapp.DTOs.CourseDtos.LoginRequest;
 import com.skillzy.skillzywebapp.DTOs.CourseDtos.SingleCourseDto;
+import com.skillzy.skillzywebapp.Models.Instructor;
 import com.skillzy.skillzywebapp.Models.User;
 import com.skillzy.skillzywebapp.Repositories.UserRepo;
 import com.skillzy.skillzywebapp.Services.HomeService;
@@ -35,14 +37,19 @@ public class HomeController {
        return new ResponseEntity(homeService.getOneCourse(id),HttpStatus.OK);
     }
 
+    @GetMapping("/course/{courseid}/instructor")
+    public ResponseEntity<Instructor> getInstructor(@PathVariable long courseid){
+        return new ResponseEntity<>(homeService.getInstructor(courseid),HttpStatus.OK);
+    }
+
     @PostMapping("/signup")
      public ResponseEntity<?> addUser(@RequestBody User user){
         return new ResponseEntity<>(homeService.addUser(user), HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> checkUser(@RequestBody User user){
-        homeService.checkUser(user);
+    public ResponseEntity<?> checkUser(@RequestBody LoginRequest loginRequest){
+        homeService.checkUser(loginRequest);
         return new ResponseEntity<>("Login Success", HttpStatus.OK);
     }
 }

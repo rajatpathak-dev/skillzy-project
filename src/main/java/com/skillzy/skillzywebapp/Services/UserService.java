@@ -5,32 +5,25 @@ import com.skillzy.skillzywebapp.DTOs.CourseDtos.SingleCourseDto;
 import com.skillzy.skillzywebapp.Exceptions.CourseNotFoundException;
 import com.skillzy.skillzywebapp.Exceptions.ReviewNotFoundException;
 import com.skillzy.skillzywebapp.Exceptions.UserNotFoundException;
-import com.skillzy.skillzywebapp.Models.Course;
-import com.skillzy.skillzywebapp.Models.Review;
-import com.skillzy.skillzywebapp.Models.Student;
-import com.skillzy.skillzywebapp.Models.User;
-import com.skillzy.skillzywebapp.Repositories.CourseRepo;
-import com.skillzy.skillzywebapp.Repositories.ReviewRepo;
-import com.skillzy.skillzywebapp.Repositories.StudentRepo;
-import com.skillzy.skillzywebapp.Repositories.UserRepo;
+import com.skillzy.skillzywebapp.Models.*;
+import com.skillzy.skillzywebapp.Repositories.*;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Service
+@AllArgsConstructor
 public class UserService {
     private UserRepo userRepo;
     private StudentRepo studentRepo;
     private ReviewRepo reviewRepo;
     private CourseRepo courseRepo;
+    private InstructorRepo instructorRepo;
 
-    public UserService(UserRepo userRepo,StudentRepo studentRepo,ReviewRepo reviewRepo,CourseRepo courseRepo) {
-        this.userRepo = userRepo;
-        this.studentRepo = studentRepo;
-        this.reviewRepo = reviewRepo;
-        this.courseRepo = courseRepo;
-    }
+
+
 
     public Set<CoursesDto> getAllCoursesOfUser(Long id) throws UserNotFoundException {
         Optional<User> user = userRepo.findById(id);
@@ -79,6 +72,7 @@ public class UserService {
         Course course = courseOpt.get();
         User user = userOpt.get();
 
+
         Student student = studentRepo.findByUserId(userId).orElseGet(()->{
             Student newStudent = new Student();
             newStudent.setUser(user);
@@ -87,7 +81,10 @@ public class UserService {
 
         student.getEnrolledCourses().add(course);
         course.setLearners(course.getLearners()+1);
+        course.getInstructor().setTotalStudents(course.getInstructor().getTotalStudents()+1);
         course.getStudents().add(student);
+
+
 
         studentRepo.save(student);
         courseRepo.save(course);
@@ -215,4 +212,16 @@ public class UserService {
 
         return userRepo.save(savedUser);
     }
+
+    public User getUser(long id) throws UserNotFoundException{
+        Optional<User> userOptional = userRepo.findById(id);
+        if(userOptional.isEmpty()){
+            throw new UserNotFoundException("user with id "+id+" not found");
+        }
+
+        User user = userOptional.get();
+        return user;
+    }
+
+
 }

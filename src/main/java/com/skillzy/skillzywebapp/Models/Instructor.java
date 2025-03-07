@@ -14,6 +14,9 @@ import java.util.Set;
 @Getter
 @Setter
 public class Instructor extends BaseModel{
+
+    @Transient
+    private String name;
     private String about;
     private Long totalStudents;
 
@@ -23,6 +26,11 @@ public class Instructor extends BaseModel{
     private User user;
 
 
-    @OneToMany(mappedBy = "instructor",cascade = {CascadeType.REMOVE})
+    @OneToMany(mappedBy = "instructor",cascade = {CascadeType.REMOVE},fetch = FetchType.LAZY)
     private Set<Course> createdCourses = new HashSet<>();
+
+    public String getName() {
+        name = this.user.getName();
+        return name;
+    }
 }

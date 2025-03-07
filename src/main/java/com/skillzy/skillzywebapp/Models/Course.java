@@ -26,7 +26,7 @@ public class Course extends BaseModel{
     @Enumerated(EnumType.STRING)
     private Language language;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.MERGE})
     @JoinColumn(name = "instructor_id")
     @JsonIgnore
     private Instructor instructor;
@@ -37,5 +37,6 @@ public class Course extends BaseModel{
 
 
     @ManyToMany(mappedBy = "enrolledCourses")
+    @JsonIgnore
     private Set<Student> students = new HashSet<>();
 }

@@ -22,6 +22,8 @@ public class InstructorController {
     }
 
 
+
+
     @GetMapping("/course")
     public ResponseEntity<Set<CoursesDto>> getAllCoursesOfInstructor(@PathVariable Long userId){
         return  new ResponseEntity<>(instructorService.getAllCoursesOfInstructor(userId),HttpStatus.OK);

@@ -1,18 +1,15 @@
 package com.skillzy.skillzywebapp.Services;
 
 import com.skillzy.skillzywebapp.DTOs.CourseDtos.CoursesDto;
+import com.skillzy.skillzywebapp.DTOs.CourseDtos.LoginRequest;
 import com.skillzy.skillzywebapp.DTOs.CourseDtos.SingleCourseDto;
-import com.skillzy.skillzywebapp.Exceptions.CourseNotFoundException;
-import com.skillzy.skillzywebapp.Exceptions.EmailAlreadyExistException;
-import com.skillzy.skillzywebapp.Exceptions.EmailNotFoundException;
-import com.skillzy.skillzywebapp.Exceptions.PasswordNotmatchException;
+import com.skillzy.skillzywebapp.Exceptions.*;
 import com.skillzy.skillzywebapp.Models.Course;
+import com.skillzy.skillzywebapp.Models.Instructor;
 import com.skillzy.skillzywebapp.Models.Student;
 import com.skillzy.skillzywebapp.Models.User;
-import com.skillzy.skillzywebapp.Repositories.CourseRepo;
-import com.skillzy.skillzywebapp.Repositories.ReviewRepo;
-import com.skillzy.skillzywebapp.Repositories.StudentRepo;
-import com.skillzy.skillzywebapp.Repositories.UserRepo;
+import com.skillzy.skillzywebapp.Repositories.*;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,6 +20,7 @@ public class HomeService {
     private ReviewRepo reviewRepo;
     private UserRepo userRepo;
     private StudentRepo studentRepo;
+    private InstructorRepo instructorRepo;
 
     public HomeService(CourseRepo courseRepo, ReviewRepo reviewRepo, UserRepo userRepo,StudentRepo studentRepo) {
         this.courseRepo = courseRepo;
@@ -51,18 +49,20 @@ public class HomeService {
         return user1;
     }
 
-    public User checkUser(User user) throws EmailNotFoundException,PasswordNotmatchException {
-        User savedUser = userRepo.findByEmail(user.getEmail());
+    public User checkUser(LoginRequest loginRequest) throws EmailNotFoundException,PasswordNotmatchException {
+        Optional<User> userOptional = userRepo.findByEmail(loginRequest.getEmail());
 
-        if(savedUser == null){
+        if(userOptional.isEmpty()){
             throw new EmailNotFoundException("Email does not exist");
         }
 
-        if(!savedUser.getPassword().equals(user.getPassword())){
+        User savedUser = userOptional.get();
+
+        if(!savedUser.getPassword().equals(loginRequest.getPassword())){
             throw new PasswordNotmatchException("Password does not match! please retry");
         }
 
-        return user;
+        return savedUser;
     }
 
     public CoursesDto convertCourseToCoursesDto(Course course){
@@ -98,5 +98,16 @@ public class HomeService {
         courseDto.setReviewList(course.getReviews());
         courseDto.setLanguage(course.getLanguage());
         return  courseDto;
+    }
+
+    public Instructor getInstructor(Long courseId) throws CourseNotFoundException {
+        Optional<Course> courseOptional  = courseRepo.findById(courseId);
+        if(courseOptional.isEmpty()){
+            throw new CourseNotFoundException("course with id "+courseId+" not found");
+        }
+
+        Course course = courseOptional.get();
+
+        return course.getInstructor();
     }
 }

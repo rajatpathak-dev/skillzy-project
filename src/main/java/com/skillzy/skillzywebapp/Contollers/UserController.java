@@ -2,9 +2,12 @@ package com.skillzy.skillzywebapp.Contollers;
 
 import com.skillzy.skillzywebapp.DTOs.CourseDtos.CoursesDto;
 import com.skillzy.skillzywebapp.DTOs.CourseDtos.SingleCourseDto;
+import com.skillzy.skillzywebapp.Models.Instructor;
 import com.skillzy.skillzywebapp.Models.Review;
 import com.skillzy.skillzywebapp.Models.User;
+import com.skillzy.skillzywebapp.Services.InstructorService;
 import com.skillzy.skillzywebapp.Services.UserService;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,18 +21,25 @@ public class UserController {
 
    private UserService userService;
 
+
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+
     @GetMapping("")
+    public ResponseEntity<User> getUser(@PathVariable long id){
+        return new ResponseEntity<>(userService.getUser(id),HttpStatus.OK);
+    }
+
+
+    @GetMapping("/course")
     public ResponseEntity<Set<CoursesDto>> getAllCoursesOfUser(@PathVariable Long id){
 
         return new ResponseEntity( userService.getAllCoursesOfUser(id), HttpStatus.OK);
     }
 
     @PatchMapping("")
-    @DeleteMapping("")
     public ResponseEntity<User> updateUser(@PathVariable("id") Long userId,@RequestBody User user){
         return new ResponseEntity<>(userService.updateUser(userId,user),HttpStatus.OK);
     }
