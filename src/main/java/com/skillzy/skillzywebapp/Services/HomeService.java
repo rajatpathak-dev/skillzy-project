@@ -1,16 +1,15 @@
 package com.skillzy.skillzywebapp.Services;
 
 import com.skillzy.skillzywebapp.DTOs.CourseDtos.CoursesDto;
-import com.skillzy.skillzywebapp.DTOs.CourseDtos.LoginRequest;
+import com.skillzy.skillzywebapp.DTOs.LoginRequest;
 import com.skillzy.skillzywebapp.DTOs.CourseDtos.SingleCourseDto;
+import com.skillzy.skillzywebapp.DTOs.UserRequestDto;
 import com.skillzy.skillzywebapp.Exceptions.*;
 import com.skillzy.skillzywebapp.Models.Course;
 import com.skillzy.skillzywebapp.Models.Instructor;
-import com.skillzy.skillzywebapp.Models.Student;
 import com.skillzy.skillzywebapp.Models.User;
 import com.skillzy.skillzywebapp.Repositories.*;
 import lombok.AllArgsConstructor;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,12 +37,14 @@ public class HomeService {
         return courseDtoList;
     }
 
-    public User addUser(User user) throws EmailAlreadyExistException{
-        if(userRepo.findByEmail(user.getEmail())!=null){
+    public User addUser(UserRequestDto userRequestDto) throws EmailAlreadyExistException{
+        if(userRepo.findByEmail(userRequestDto.getEmail()).isPresent()){
             throw new EmailAlreadyExistException("This email is already registered. Please use a different email.");
         }
 
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        User user = userRequestDto.convertToUser();
+
+        user.setPassword(bCryptPasswordEncoder.encode(userRequestDto.getPassword()));
 
         return userRepo.save(user);
     }

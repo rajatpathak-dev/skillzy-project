@@ -1,22 +1,19 @@
 package com.skillzy.skillzywebapp.Contollers;
 
 import com.skillzy.skillzywebapp.DTOs.CourseDtos.CoursesDto;
-import com.skillzy.skillzywebapp.DTOs.CourseDtos.LoginRequest;
+import com.skillzy.skillzywebapp.DTOs.LoginRequest;
 import com.skillzy.skillzywebapp.DTOs.CourseDtos.SingleCourseDto;
+import com.skillzy.skillzywebapp.DTOs.UserRequestDto;
 import com.skillzy.skillzywebapp.Models.Instructor;
-import com.skillzy.skillzywebapp.Models.User;
-import com.skillzy.skillzywebapp.Repositories.UserRepo;
 import com.skillzy.skillzywebapp.Services.HomeService;
-import com.skillzy.skillzywebapp.Services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/home")
 public class HomeController {
     private HomeService homeService;
 
@@ -43,7 +40,7 @@ public class HomeController {
     }
 
     @PostMapping("/signup")
-     public ResponseEntity<?> addUser(@RequestBody User user){
+     public ResponseEntity<?> addUser(@RequestBody UserRequestDto user){
         return new ResponseEntity<>(homeService.addUser(user), HttpStatus.OK);
     }
 

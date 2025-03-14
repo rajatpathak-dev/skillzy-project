@@ -1,4 +1,4 @@
-package com.skillzy.skillzywebapp.DTOs.CourseDtos;
+package com.skillzy.skillzywebapp.DTOs;
 
 import lombok.Getter;
 import lombok.Setter;
