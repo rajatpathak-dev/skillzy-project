@@ -9,12 +9,15 @@ import com.skillzy.skillzywebapp.Models.Instructor;
 import com.skillzy.skillzywebapp.Models.Student;
 import com.skillzy.skillzywebapp.Models.User;
 import com.skillzy.skillzywebapp.Repositories.*;
+import lombok.AllArgsConstructor;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Service
+@AllArgsConstructor
 public class HomeService {
     private CourseRepo courseRepo;
     private ReviewRepo reviewRepo;
@@ -22,12 +25,8 @@ public class HomeService {
     private StudentRepo studentRepo;
     private InstructorRepo instructorRepo;
 
-    public HomeService(CourseRepo courseRepo, ReviewRepo reviewRepo, UserRepo userRepo,StudentRepo studentRepo) {
-        this.courseRepo = courseRepo;
-        this.reviewRepo = reviewRepo;
-        this.userRepo = userRepo;
-        this.studentRepo = studentRepo;
-    }
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
 
     public List<CoursesDto> getAllCourses(){
         List<Course> courses = courseRepo.findAll();
@@ -44,9 +43,9 @@ public class HomeService {
             throw new EmailAlreadyExistException("This email is already registered. Please use a different email.");
         }
 
-        User user1 = userRepo.save(user);
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
-        return user1;
+        return userRepo.save(user);
     }
 
     public User checkUser(LoginRequest loginRequest) throws EmailNotFoundException,PasswordNotmatchException {
