@@ -10,7 +10,6 @@ import com.skillzy.skillzywebapp.Models.Instructor;
 import com.skillzy.skillzywebapp.Models.User;
 import com.skillzy.skillzywebapp.Repositories.*;
 import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,7 +23,6 @@ public class HomeService {
     private StudentRepo studentRepo;
     private InstructorRepo instructorRepo;
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
     public List<CoursesDto> getAllCourses(){
@@ -44,7 +42,7 @@ public class HomeService {
 
         User user = userRequestDto.convertToUser();
 
-        user.setPassword(bCryptPasswordEncoder.encode(userRequestDto.getPassword()));
+        user.setPassword(userRequestDto.getPassword());
 
         return userRepo.save(user);
     }
